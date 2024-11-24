@@ -27,37 +27,16 @@ chess_positions = {
     64: "H1", 56: "H2", 48: "H3", 40: "H4", 32: "H5", 24: "H6", 16: "H7", 8: "H8",
 }
 
-
-def determine_piece_color(image_path):
-    image = cv2.imread(image_path)
-    if image is None:
-        raise ValueError(f"Не удалось загрузить изображение по пути: {image_path}")
-
-    hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-    height, width, _ = image.shape
-    center_pixel = hsv_image[height // 2, width // 2]
-
-    lower_white = np.array([0, 0, 200])
-    upper_white = np.array([180, 25, 255])
-    lower_black = np.array([0, 0, 0])
-    upper_black = np.array([180, 255, 30])
-
-    if (lower_white <= center_pixel).all() and (center_pixel <= upper_white).all():
-        return "White"
-    elif (lower_black <= center_pixel).all() and (center_pixel <= upper_black).all():
-        return "Black"
-    else:
-        return "Unknown"
-
 def recognize():
-    # Путь к папке с изображениями
-    folder_path = 'squares'  # Замените на ваш путь к папке
+    folder_path = 'squares'
 
     # Декодирование метки
-    label_map = {idx: label for idx, label in enumerate(['bishop', 'empty', 'king', 'night', 'pawn', 'queen', 'rook'])}
+    label_map = {idx: label for idx, label in
+                 enumerate(['bishop:Black', 'king:Black', 'night:Black', 'pawn:Black', 'queen:Black', 'rook:Black',
+                            'bishop:White', 'king:White', 'night:White', 'pawn:White', 'queen:White', 'rook:White',
+                            'empty:White'])}
 
     arr = []
-    # Обработка всех изображений в папке
     for i in range(1, 65):
         image_name = f'cell_{i}.jpg'
         image_path = os.path.join(folder_path, image_name)
@@ -65,19 +44,14 @@ def recognize():
         if os.path.exists(image_path):
             processed_image = preprocess_image(image_path)
             predictions = model.predict(processed_image)
-            predictions[0][1] *= 1000
-            predicted_class = np.argmax(predictions[0])
+            predicted_class = np.argmax(predictions)
             predicted_label = label_map[predicted_class]
-
-            square_color = determine_piece_color(image_path)  # Передаем полный путь
-
-            print(f"{chess_positions[i]}:{predicted_label}:{square_color}")
-            arr.append(f"{chess_positions[i]}:{predicted_label}:{square_color}")
+            print(f"{chess_positions[i]}:{predicted_label}")
+            arr.append(f"{chess_positions[i]}:{predicted_label}")
         else:
             print(f"{image_name} не найден.")
 
     import webbrowser
-
     positions = arr
 
     board = [['.' for _ in range(8)] for _ in range(8)]

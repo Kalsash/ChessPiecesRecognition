@@ -10,6 +10,6 @@ if __name__ == "__main__":
     root = tk.Tk()
     app = ImageCropper(root)
     root.mainloop()
-    process_image('cropped_image.png', 'output/tiles/')
-    GetSquares(cv2.imread('lined.jpg'))
+    #GetSquares(cv2.imread('positions/1b1B1b2-2pK2q1-4p1rB-7k-8-8-3B4-3rb3.jpeg'))
+    GetSquares(cv2.imread('cropped_image.png'))
     recognize()
