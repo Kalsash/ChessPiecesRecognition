@@ -14,7 +14,7 @@ class ImageCropper:
         self.upload_button = tk.Button(root, text="Upload Image", command=self.upload_image)
         self.upload_button.pack()
 
-        self.save_button = tk.Button(root, text="Save Cropped Image", command=self.save_image)
+        self.save_button = tk.Button(root, text="Save Image", command=self.save_image)
         self.save_button.pack()
 
         self.rect = None
@@ -62,9 +62,8 @@ class ImageCropper:
         self.canvas.create_image(0, 0, anchor=tk.NW, image=self.photo)
 
     def save_image(self):
-        if self.cropped_image:
-            file_path = os.path.join(os.getcwd(), "cropped_image.png")
-            self.cropped_image.save(file_path)
-            print(f"Image saved as '{file_path}'")
-        else:
-            print("No cropped image to save.")
+        if not self.cropped_image:
+            self.cropped_image = self.image
+        file_path = os.path.join(os.getcwd(), "cropped_image.png")
+        self.cropped_image.save(file_path)
+        print(f"Image saved as '{file_path}'")
